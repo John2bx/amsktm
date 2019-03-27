@@ -21,6 +21,18 @@ const User = sequelize.define('users', {
 })
 User.sync()
 
+const Clients = sequelize.define('clients', {
+  name: Sequelize.STRING,
+  firstName: Sequelize.STRING,
+  lastName: Sequelize.STRING,
+  address: Sequelize.TEXT,
+  dateOfBirth: Sequelize.DATE
+}
+ , {
+  tableName: 'cients'
+})
+User.sync()
+
 const Candidate = sequelize.define('candidates', {
   name: Sequelize.STRING,
   firstName: Sequelize.STRING,
@@ -77,6 +89,7 @@ function auth(req, res, next) {
 app.get('/do-something', (request, response) => {
   response.send(`I'll do something, I promise!`)
 })
+
 app.get('/candidates', function (req, res, next) {
   Candidate.findAll()
     .then(candidates => {
@@ -185,4 +198,95 @@ User
 })
 
 
-module.exports = User
+const nodemailer = require('nodemailer');
+const xoauth2 = require('xoauth2');
+let transporter = nodemailer.createTransport({
+  service: "gmail",
+  host: "smtp.gmail.com",
+  secure: "true",
+  port: "465",
+  auth: {
+  type: "OAuth2", //Authentication type
+  user: "your_email@service.com", //For example, xyz@gmail.com
+  clientId: "Your_ClientID",
+  clientSecret: "Client_Secret",
+  refreshToken: "Refresh_Token"
+       }
+  });
+
+  let mailOptions = {
+    from: "your_email@service.com",
+    to: "receiver_email@service.com",
+    subject: "This is subject",
+    text: "This is email content"};
+  var Imap = require("imap"),
+    inspect = require("util").inspect;
+var fs = require("fs"), fileStream;
+
+var imap = new Imap({
+  user: "john9@dewerkshop.info",
+  password: "Werkshop01",
+  host: "xis24.xenat.com",
+  port: 993,
+  tls: true
+  });
+
+function openInbox(cb) {
+imap.openBox("INBOX", true, cb);
+  }
+imap.once("ready", function() {
+openInbox(function(err, box) {
+if (err) throw err;
+imap.search([ "UNSEEN", ["SINCE", "June 15, 2018"] ], function(err, results) {
+if (err) throw err;
+var f = imap.fetch(results, { bodies: "" });
+f.on("message", function(msg, seqno) {
+console.log("Message #%d", seqno);
+var prefix = "(#’ + seqno + ‘) ";
+msg.on("body", function(stream, info) {
+console.log(prefix + "Body");
+stream.pipe(fs.createWriteStream("msg-" + seqno + "-body.txt"));
+});
+msg.once("attributes", function(attrs) {
+console.log(prefix + "Attributes: %s", inspect(attrs, false, 8));
+});
+msg.once("end", function() {
+console.log(prefix + "Finished");
+});
+});
+f.once("error", function(err) {
+console.log("Fetch error: " + err);
+});
+f.once("end", function() {
+console.log("Done fetching all messages!");
+imap.end();});
+    });
+  });
+});
+imap.once("error", function(err) {
+console.log(err);
+});
+imap.once("end", function() {
+console.log("Connection ended");
+});
+imap.connect();
+
+const Pop3Command = require('node-pop3');
+ 
+const pop3 = new Pop3Command({
+  user: 'john9@dewerkshop.info',
+  password: 'Werkshop01',
+  host: 'xis24.xenat.com',
+})
+
+const msgNum = 1;
+
+// pop3.RETR(msgNum)
+// .then((stream) => {
+//   // deal with mail stream
+// })
+// .then(() => pop3.QUIT());
+
+pop3.UIDL()
+.then((list) => console.dir(list));
+
