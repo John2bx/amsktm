@@ -1,0 +1,18 @@
+{
+  "name": "werkshop",
+  "version": "1.0.0",
+  "description": "Connect candidates with employers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "John & Mahmod",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.5",
+    "express": "^4.16.4",
+    "jsonwebtoken": "^8.5.1",
+    "pg": "^6.4.2",
+    "sequelize": "^5.1.0"
+  }
+}
